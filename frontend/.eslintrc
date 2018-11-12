@@ -1,0 +1,17 @@
+{
+  "parser": "babel-eslint",
+  "extends": "eslint:recommended",
+  "rules": {
+    "semi": ["error", "always"]
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "define": true,
+    "$": true,
+    "jQuery": true,
+    "NODE_ENV": true
+  }
+}

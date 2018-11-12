@@ -1,0 +1,6 @@
+/node_modules
+/release/css
+/release/js
+worker.log
+npm-debug.log
+yarn-error.log

@@ -1,0 +1,17 @@
+.main .container .row p {
+    text-align: justify;
+    margin: 0 0 15px;
+    line-height: 1.8em;
+    color: rgb(51, 51, 51);
+    font-family: 'Open Sans', sans-serif;
+}
+
+.main .container .row img {
+    display:block;
+    max-width:100%;
+    height:auto
+}
+
+.content-publish-time {
+    float: right;
+}

@@ -1,0 +1,7 @@
+/.idea
+/.data/logs/mysql
+/.data/logs/nginx
+/.data/logs/php
+/.data/redis/dump.rdb
+sitemap.xml
+calculator.php

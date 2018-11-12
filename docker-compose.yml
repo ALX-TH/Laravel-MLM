@@ -1,0 +1,80 @@
+version: "2"
+services:
+
+    # MySQL database
+    mysql:
+      image: ${CMS_MYSQL_IMAGE}
+      container_name: ${CMS_MYSQL_CONTAINER_NAME}
+      working_dir: ${CMS_APP_ROOT_PATH}
+      restart: always
+      volumes:
+        - ${CMS_APP_REAL_PATH}:${CMS_APP_ROOT_PATH}
+        - ${CMS_APP_LOGS_PATH}/mysql:/var/log/mysql
+        - ${CMS_MYSQL_CONTAINER_CONFIG}:/etc/mysql/conf.d
+        - ./docker/cronlabptc.sql:/docker-entrypoint-initdb.d/db.sql
+      environment:
+        - MYSQL_ROOT_PASSWORD=${CMS_MYSQL_PASSWORD}
+        - MYSQL_DATABASE=${CMS_MYSQL_DATABASE}
+        - MYSQL_USER=${CMS_MYSQL_USER}
+        - MYSQL_PASSWORD=${CMS_MYSQL_PASSWORD}
+      ports:
+       - "8010:3306"
+    # @MySQL database
+
+    # Redis
+    redis:
+      container_name: hyip_redis
+      image: redis:4-alpine
+      ports:
+       - "8009:6379"
+      volumes:
+       - ${CMS_APP_DATA_DIR}/redis:/data
+    # @Redis
+
+    # HyipCMS Application
+    app:
+      build: docker/app
+      container_name: hyip_application
+      working_dir: ${CMS_APP_ROOT_PATH}
+      volumes:
+        - ${CMS_APP_REAL_PATH}:${CMS_APP_ROOT_PATH}
+        - ${CMS_APP_LOGS_PATH}/php:/var/log/php
+      depends_on:
+       - mysql
+       - redis
+      ports:
+       - "9000:9000"
+       - "9001:9001"
+    # @HyipCMS application
+
+    # Nginx webserver
+    webserver:
+      image: nginx
+      container_name: hyip_nginx
+      working_dir: ${CMS_APP_ROOT_PATH}
+      volumes:
+          - ${CMS_APP_REAL_PATH}:${CMS_APP_ROOT_PATH}
+          - ${CMS_APP_LOGS_PATH}/nginx:/var/log/nginx
+          - ${CMS_NGINX_CONTAINER_CONFIG}:/etc/nginx/conf.d
+      ports:
+       - ${CMS_NGINX_HTTP_PORT}:80
+       - ${CMS_NGINX_HTTPS_PORT}:443
+      depends_on:
+       - app
+    # Nginx webserver
+
+    # PHPMyAdmin application
+    phpmyadmin:
+      container_name: hyip_phpmyadmin
+      image: phpmyadmin/phpmyadmin
+      ports:
+       - ${CMS_PHPMYADMIN_WEB_PORT}:80
+      environment:
+          - PMA_HOST=mysql
+          - PMA_USER=${CMS_MYSQL_USER}
+          - PMA_PASSWORD=${CMS_MYSQL_PASSWORD}
+          - PMA_ARBITRARY=1
+      restart: always
+      depends_on:
+       - mysql
+    # @PHPMyAdmin application
